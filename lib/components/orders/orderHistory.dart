@@ -166,7 +166,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                     Divider(
                       thickness: 3,
                     ),
-                    widget.role == 'user'
+                    widget.role == 'user' && (orders[index].data['status'] == 'dispatched' || orders[index].data['status'] == 'completed' ||orders[index].data['status'] == 'Cancel')
                         ? Column(
                             children: [
                               Padding(

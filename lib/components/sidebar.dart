@@ -11,6 +11,7 @@ import 'package:app_frontend/components/add-design.dart';
 import 'package:app_frontend/components/add-fabric.dart';
 import 'package:app_frontend/components/add-seller.dart';
 import 'package:app_frontend/services/userService.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 Widget sidebar(BuildContext context, String role) {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
@@ -141,6 +142,7 @@ Widget sidebar(BuildContext context, String role) {
                             letterSpacing: 1.0),
                       ),
                       onTap: () async {
+                        if (await Permission.storage.request().isGranted) {
                         var dir = await _filehandlerservice.downloadPath;
                         var fileName = "report${DateTime.now()}";
                         File shareFile = File("$dir/$fileName.pdf");
@@ -162,7 +164,8 @@ Widget sidebar(BuildContext context, String role) {
                         _okayDialog(context);
                         // _filehandlerservice.shareFile(
                         //     "report", "Share Report", "Share report");
-                      },
+                      }
+                      }
                     )
                   : Container(),
               ListTile(
@@ -197,6 +200,8 @@ Future<void> _okayDialog(context) async {
           child: ListBody(
             children: <Widget>[
               Text('Your report is saved on download folder.'),
+              SizedBox(height: 15),
+              Text(' If cannot find it directly go to files => internal storage => downloads', style: TextStyle(color: Colors.blueAccent, fontSize: 13),),
             ],
           ),
         ),

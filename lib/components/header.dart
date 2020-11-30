@@ -45,21 +45,5 @@ Widget header(String headerText,GlobalKey<ScaffoldState> scaffoldKey,bool  showI
         }
       },
     ),
-    actions: <Widget>[
-      Visibility(
-        visible: showIcon,
-        child: IconButton(
-          icon: Icon(
-            Icons.shopping_basket,
-            size: 35.0,
-            color: Colors.black,
-          ),
-          onPressed: () async{
-            Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => OrderHistory()));
-          },
-        ),
-      )
-    ],
   );
 }

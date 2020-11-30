@@ -67,47 +67,47 @@ class DesignService {
         return docRef.documents;
   }
 
-  Future<void> remove(String id) async {
-    String uid = await userService.getUserId();
+  // Future<void> remove(String id) async {
+  //   String uid = await userService.getUserId();
 
-    await _firestore
-        .collection('bags')
-        .where('userId', isEqualTo: uid)
-        .getDocuments()
-        .then((QuerySnapshot doc) {
-      doc.documents.forEach((docRef) async {
-        List products = docRef['products'];
-        if (products.length == 1) {
-          await _firestore
-              .collection('bags')
-              .document(docRef.documentID)
-              .delete();
-        } else {
-          products.removeWhere((productData) => productData['id'] == id);
-          await _firestore
-              .collection('bags')
-              .document(docRef.documentID)
-              .setData({'products': products}, merge: true);
-        }
-      });
-    });
-  }
+  //   await _firestore
+  //       .collection('bags')
+  //       .where('userId', isEqualTo: uid)
+  //       .getDocuments()
+  //       .then((QuerySnapshot doc) {
+  //     doc.documents.forEach((docRef) async {
+  //       List products = docRef['products'];
+  //       if (products.length == 1) {
+  //         await _firestore
+  //             .collection('bags')
+  //             .document(docRef.documentID)
+  //             .delete();
+  //       } else {
+  //         products.removeWhere((productData) => productData['id'] == id);
+  //         await _firestore
+  //             .collection('bags')
+  //             .document(docRef.documentID)
+  //             .setData({'products': products}, merge: true);
+  //       }
+  //     });
+  //   });
+  // }
 
-  Future<void> delete() async {
-    String uid = await userService.getUserId();
+  // Future<void> delete() async {
+  //   String uid = await userService.getUserId();
 
-    QuerySnapshot bagItems = await _firestore
-        .collection('bags')
-        .where('userId', isEqualTo: uid)
-        .getDocuments();
-    String shoppingBagItemId = bagItems.documents[0].documentID;
+  //   QuerySnapshot bagItems = await _firestore
+  //       .collection('bags')
+  //       .where('userId', isEqualTo: uid)
+  //       .getDocuments();
+  //   String shoppingBagItemId = bagItems.documents[0].documentID;
 
-    final TransactionHandler deleteTransaction = (Transaction tx) async {
-      final DocumentSnapshot ds = await tx
-          .get(_firestore.collection('bags').document(shoppingBagItemId));
-      await tx.delete(ds.reference);
-    };
+  //   final TransactionHandler deleteTransaction = (Transaction tx) async {
+  //     final DocumentSnapshot ds = await tx
+  //         .get(_firestore.collection('bags').document(shoppingBagItemId));
+  //     await tx.delete(ds.reference);
+  //   };
 
-    await _firestore.runTransaction(deleteTransaction);
-  }
+  //   await _firestore.runTransaction(deleteTransaction);
+  // }
 }

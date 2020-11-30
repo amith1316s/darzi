@@ -21,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:app_frontend/services/designService.dart';
 import 'package:app_frontend/services/fabricService.dart';
 import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -195,7 +196,7 @@ class _HomeState extends State<Home> {
                                   child: Column(
                                     children: [
                                       Card(
-                                        shape: RoundedRectangleBorder(
+                                          shape: RoundedRectangleBorder(
                                             side: BorderSide(
                                                 color: Colors.lightBlue,
                                                 width: 1),
@@ -203,23 +204,23 @@ class _HomeState extends State<Home> {
                                                 BorderRadius.circular(6),
                                           ),
                                           child: ListTile(
-                                        leading: ImageIcon(
-                                            AssetImage("assets/fabric.png")),
-                                        title: Text(
-                                          'Add Fabric',
-                                          style: TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1.0),
-                                        ),
-                                        onTap: () async {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AddFabric()));
-                                        },
-                                      ))
+                                            leading: ImageIcon(AssetImage(
+                                                "assets/fabric.png")),
+                                            title: Text(
+                                              'Add Fabric',
+                                              style: TextStyle(
+                                                  fontSize: 18.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.0),
+                                            ),
+                                            onTap: () async {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AddFabric()));
+                                            },
+                                          ))
                                     ],
                                   ),
                                 )
@@ -237,56 +238,63 @@ class _HomeState extends State<Home> {
                                     children: [
                                       Card(
                                         shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                                color: Colors.lightBlue,
-                                                width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(6),
-                                          ),
-                                        child: ListTile(
-                                          leading: Icon(Icons.receipt),
-                                          title: Text(
-                                            'Reports',
-                                            style: TextStyle(
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.bold,
-                                                letterSpacing: 1.0),
-                                          ),
-                                          onTap: () async {
-                                            var dir = await _filehandlerservice
-                                                .downloadPath;
-                                                var fileName = "report${DateTime.now()}";
-                                            File shareFile =
-                                                File("$dir/$fileName.pdf");
-
-                                            var data;
-                                            if (role == 'user') {
-                                              data = await orderService
-                                                  .orderListForUser();
-                                            } else if (role == 'seller') {
-                                              data = await orderService
-                                                  .orderListForSeller();
-                                            } else if (role == 'admin') {
-                                              data = await orderService
-                                                  .orderListForAdmin();
-                                            }
-                                            var htmlContent =
-                                                await _reportGenerateService
-                                                    .generateReportContent(
-                                                        data);
-
-                                            await _filehandlerservice
-                                                .generatePDFDocument("$fileName",
-                                                    htmlContent, context);
-
-                                            _okayDialog();
-
-                                            // _filehandlerservice.shareFile(
-                                            //     "report",
-                                            //     "Share Report",
-                                            //     "Share report");
-                                          },
+                                          side: BorderSide(
+                                              color: Colors.lightBlue,
+                                              width: 1),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
                                         ),
+                                        child: ListTile(
+                                            leading: Icon(Icons.receipt),
+                                            title: Text(
+                                              'Reports',
+                                              style: TextStyle(
+                                                  fontSize: 18.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.0),
+                                            ),
+                                            onTap: () async {
+                                              if (await Permission.storage
+                                                  .request()
+                                                  .isGranted) {
+                                                var dir =
+                                                    await _filehandlerservice
+                                                        .downloadPath;
+                                                var fileName =
+                                                    "report${DateTime.now().toString()}";
+                                                File shareFile =
+                                                    File("$dir/$fileName.pdf");
+
+                                                var data;
+                                                if (role == 'user') {
+                                                  data = await orderService
+                                                      .orderListForUser();
+                                                } else if (role == 'seller') {
+                                                  data = await orderService
+                                                      .orderListForSeller();
+                                                } else if (role == 'admin') {
+                                                  data = await orderService
+                                                      .orderListForAdmin();
+                                                }
+                                                var htmlContent =
+                                                    await _reportGenerateService
+                                                        .generateReportContent(
+                                                            data);
+
+                                                await _filehandlerservice
+                                                    .generatePDFDocument(
+                                                        "$fileName",
+                                                        htmlContent,
+                                                        context);
+
+                                                _okayDialog();
+
+                                                // _filehandlerservice.shareFile(
+                                                //     "report",
+                                                //     "Share Report",
+                                                //     "Share report");
+                                              }
+                                            }),
                                       )
                                     ],
                                   ),
@@ -296,12 +304,12 @@ class _HomeState extends State<Home> {
                                     children: [
                                       Card(
                                         shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                                color: Colors.lightBlue,
-                                                width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(6),
-                                          ),
+                                          side: BorderSide(
+                                              color: Colors.lightBlue,
+                                              width: 1),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
                                         child: ListTile(
                                           leading: Icon(Icons.local_shipping),
                                           title: Text(
@@ -337,7 +345,7 @@ class _HomeState extends State<Home> {
                                   child: Column(
                                     children: [
                                       Card(
-                                        shape: RoundedRectangleBorder(
+                                          shape: RoundedRectangleBorder(
                                             side: BorderSide(
                                                 color: Colors.lightBlue,
                                                 width: 1),
@@ -345,23 +353,23 @@ class _HomeState extends State<Home> {
                                                 BorderRadius.circular(6),
                                           ),
                                           child: ListTile(
-                                        leading: ImageIcon(
-                                            AssetImage("assets/design.png")),
-                                        title: Text(
-                                          'Add Tayler',
-                                          style: TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1.0),
-                                        ),
-                                        onTap: () async {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AddSeller()));
-                                        },
-                                      ))
+                                            leading: ImageIcon(AssetImage(
+                                                "assets/design.png")),
+                                            title: Text(
+                                              'Add Tayler',
+                                              style: TextStyle(
+                                                  fontSize: 18.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.0),
+                                            ),
+                                            onTap: () async {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AddSeller()));
+                                            },
+                                          ))
                                     ],
                                   ),
                                 ),
@@ -374,7 +382,7 @@ class _HomeState extends State<Home> {
                             ),
                           )
                         : Container(),
-                        role == 'seller'
+                    role == 'seller'
                         ? Padding(
                             padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 0.0),
                             child: Row(
@@ -383,7 +391,7 @@ class _HomeState extends State<Home> {
                                   child: Column(
                                     children: [
                                       Card(
-                                        shape: RoundedRectangleBorder(
+                                          shape: RoundedRectangleBorder(
                                             side: BorderSide(
                                                 color: Colors.lightBlue,
                                                 width: 1),
@@ -391,22 +399,22 @@ class _HomeState extends State<Home> {
                                                 BorderRadius.circular(6),
                                           ),
                                           child: ListTile(
-                                        leading: Icon(Icons.list),
-                                        title: Text(
-                                          'Feedbakcs',
-                                          style: TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1.0),
-                                        ),
-                                        onTap: () async {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Feedbacks()));
-                                        },
-                                      ))
+                                            leading: Icon(Icons.list),
+                                            title: Text(
+                                              'Feedbakcs',
+                                              style: TextStyle(
+                                                  fontSize: 18.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.0),
+                                            ),
+                                            onTap: () async {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Feedbacks()));
+                                            },
+                                          ))
                                     ],
                                   ),
                                 ),
@@ -510,6 +518,11 @@ class _HomeState extends State<Home> {
             child: ListBody(
               children: <Widget>[
                 Text('Your report is saved on download folder.'),
+                SizedBox(height: 15),
+                Text(
+                  ' If cannot find it directly go to files => internal storage => downloads',
+                  style: TextStyle(color: Colors.blueAccent, fontSize: 13),
+                ),
               ],
             ),
           ),

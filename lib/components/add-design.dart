@@ -16,14 +16,19 @@ class _AddDesignState extends State<AddDesign> {
   HashMap designData = new HashMap<String, dynamic>();
   ValidateService validateService = ValidateService();
   DesignService designService = DesignService();
+  final _formKey = GlobalKey<FormState>();
+  final  scaffoldKey = GlobalKey<ScaffoldState>();
+
   File _image;
   String fileLocation = '';
+  bool _autoValidate = false;
 
   FileUploadService fileUploadService = FileUploadService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         centerTitle: true,
         leading: BackButton(
@@ -44,96 +49,117 @@ class _AddDesignState extends State<AddDesign> {
       body: SingleChildScrollView(
         child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  decoration: customFormField('Title'),
-                  validator: (value) => validateService.isEmptyField(value),
-                  onChanged: (String val) {
-                    designData['title'] = val;
-                  },
-                  style: TextStyle(fontSize: 17.0),
-                ),
-                SizedBox(height: 30.0),
-                TextFormField(
-                  decoration: customFormField('Price'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) => validateService.isEmptyField(value),
-                  onChanged: (String val) {
-                    designData['price'] = int.parse(val);
-                  },
-                  style: TextStyle(fontSize: 17.0),
-                ),
-                SizedBox(height: 30.0),
-                TextFormField(
-                  decoration: customFormField('Time to deliver'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      validateService.validatePhoneNumber(value),
-                  onChanged: (String val) {
-                    designData['timeToDeliver'] = int.parse(val);
-                  },
-                  style: TextStyle(fontSize: 17.0),
-                ),
-                SizedBox(height: 30.0),
-                TextFormField(
-                  decoration: customFormField('Description'),
-                  maxLines: 5,
-                  keyboardType: TextInputType.text,
-                  validator: (value) => validateService.validateEmail(value),
-                  onChanged: (String val) {
-                    designData['description'] = val;
-                  },
-                  style: TextStyle(fontSize: 17.0),
-                ),
-                SizedBox(height: 30.0),
-                ButtonTheme(
-                  minWidth: 180.0,
-                  child: FlatButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(36),
-                        side: BorderSide(color: Colors.black)),
-                    padding: EdgeInsets.symmetric(vertical: 10.0),
-                    color: Colors.blue[800],
-                    textColor: Colors.white,
-                    child: Text(
-                      'Select image',
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: () async {
-                      _pickImage(ImageSource.gallery);
+            child: Form(
+              key: _formKey,
+              autovalidate: _autoValidate,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    decoration: customFormField('Title'),
+                    validator: (value) => validateService.isEmptyField(value),
+                    onChanged: (String val) {
+                      designData['title'] = val;
                     },
+                    style: TextStyle(fontSize: 17.0),
                   ),
-                ),
-                _image != null ? Image.file(_image) : Container(),
-                SizedBox(height: 50.0),
-                ButtonTheme(
-                  minWidth: 180.0,
-                  child: FlatButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(36),
-                        side: BorderSide(color: Colors.black)),
-                    padding: EdgeInsets.symmetric(vertical: 10.0),
-                    color: Colors.blue[800],
-                    textColor: Colors.white,
-                    child: Text(
-                      'Add',
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: () async {
-                      designService.add(
-                          designData['title'],
-                          designData['price'],
-                          designData['timeToDeliver'],
-                          designData['description'],
-                           _image != null ? "https://firebasestorage.googleapis.com/v0/b/darzi-3f31a.appspot.com/o/$fileLocation?alt=media" : '');
-                      Navigator.pop(context);
+                  SizedBox(height: 30.0),
+                  TextFormField(
+                    decoration: customFormField('Price'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) => validateService.isEmptyField(value),
+                    onChanged: (String val) {
+                      designData['price'] = int.parse(val);
                     },
+                    style: TextStyle(fontSize: 17.0),
                   ),
-                )
-              ],
+                  SizedBox(height: 30.0),
+                  TextFormField(
+                    decoration: customFormField('Time to deliver'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) =>
+                        validateService.isEmptyField(value),
+                    onChanged: (String val) {
+                      designData['timeToDeliver'] = int.parse(val);
+                    },
+                    style: TextStyle(fontSize: 17.0),
+                  ),
+                  SizedBox(height: 30.0),
+                  TextFormField(
+                    decoration: customFormField('Description'),
+                    maxLines: 5,
+                    keyboardType: TextInputType.text,
+                    validator: (value) => validateService.isEmptyField(value),
+                    onChanged: (String val) {
+                      designData['description'] = val;
+                    },
+                    style: TextStyle(fontSize: 17.0),
+                  ),
+                  SizedBox(height: 30.0),
+                  ButtonTheme(
+                    minWidth: 180.0,
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(36),
+                          side: BorderSide(color: Colors.black)),
+                      padding: EdgeInsets.symmetric(vertical: 10.0),
+                      color: Colors.blue[800],
+                      textColor: Colors.white,
+                      child: Text(
+                        'Select image',
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () async {
+                        _pickImage(ImageSource.gallery);
+                      },
+                    ),
+                  ),
+                  _image != null ? Image.file(_image) : Container(),
+                  SizedBox(height: 50.0),
+                  ButtonTheme(
+                    minWidth: 180.0,
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(36),
+                          side: BorderSide(color: Colors.black)),
+                      padding: EdgeInsets.symmetric(vertical: 10.0),
+                      color: Colors.blue[800],
+                      textColor: Colors.white,
+                      child: Text(
+                        'Add',
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () async {
+                        if (this._formKey.currentState.validate()) {
+                          if(_image != null){
+                          designService.add(
+                              designData['title'],
+                              designData['price'],
+                              designData['timeToDeliver'],
+                              designData['description'],
+                              _image != null
+                                  ? "https://firebasestorage.googleapis.com/v0/b/darzi-3f31a.appspot.com/o/$fileLocation?alt=media"
+                                  : '');
+                          Navigator.pop(context);
+                          }
+                          else {
+                          scaffoldKey.currentState.showSnackBar(
+                            SnackBar(
+                              content: Text("Please select image before save."),
+                            )
+                          );
+                        }
+                        } else {
+                          setState(() {
+                            _autoValidate = true;
+                          });
+                        }
+                      },
+                    ),
+                  )
+                ],
+              ),
             )),
       ),
     );
